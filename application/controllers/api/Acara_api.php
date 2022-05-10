@@ -33,7 +33,7 @@ class Acara_api extends CI_Controller
         if (!empty($jadwal)) {
             die(json_encode(['jadwal' => $jadwal, 'code' => 200, 'message' => 'data ditemukan']));
         } else {
-            die(json_encode(['code' => 404, 'message' => 'data tidak ditemukan']));
+            die(json_encode(['code' => 404, 'message' => 'Jadwal anda belum tersedia']));
         }
     }
 
@@ -62,6 +62,28 @@ class Acara_api extends CI_Controller
         } else {
             die(json_encode(['code' => 404, 'message' => 'data tidak ditemukan']));
         }
+    }
+
+    public function showQrCode()
+    {
+        $email = $this->input->get_post('email');
+        $where = "user_petugas.userid IN ('$email') 
+        AND DATE(tanggal_pelaksanaan) BETWEEN NOW() 
+        AND NOW() + INTERVAL 7 DAY";
+        $data = $this->acara->getAcaraTerdekat("id_acara, tanggal_pelaksanaan,jenis_petugas, nama_acara", $where)->row();
+        $qr = [];
+
+        if (empty($data->id_acara)) {
+            die(json_encode(['code' => 500, 'message' => 'QR Code Belum Tersedia']));
+        }
+        $qr['id_acara'] = $data->id_acara;
+        $qr['hari'] = $this->etc->getDayIndonesia(date_format(date_create($data->tanggal_pelaksanaan), 'n'));
+        $qr['tanggal'] = date_format(date_create($data->tanggal_pelaksanaan), 'd');
+        $qr['full_date'] = trim($this->etc->indonesiaDate(date_format(date_create($data->tanggal_pelaksanaan), 'Y-m-d')));
+        $qr['jam_pelaksanaan'] = date_format(date_create($data->tanggal_pelaksanaan), 'H:i');
+        $qr['tugas'] = $data->jenis_petugas;
+        $qr['nama_acara'] = $data->nama_acara;
+        die(json_encode(['qr' => $qr, 'code' => 200, 'message' => 'data ditemukan']));
     }
 
     public function getProfile()

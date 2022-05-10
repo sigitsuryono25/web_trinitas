@@ -56,3 +56,6 @@ $route['translate_uri_dashes'] = FALSE;
 $route['api/get-jadwal'] = "api/Acara_api/getJadwal";
 $route['api/get-history'] = "api/Acara_api/getHistory";
 $route['api/get-profile'] = "api/Acara_api/getProfile";
+$route['api/get-qr-active'] = "api/Acara_api/showQrCode";
+$route['api/register'] = "api/Auth/register";
+$route['api/login'] = "api/Auth/login";

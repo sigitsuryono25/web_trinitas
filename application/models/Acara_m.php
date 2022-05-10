@@ -47,6 +47,27 @@ class Acara_m extends CI_Model
             return $q->get();
         }
     }
+
+    public function getAcaraTerdekat($kolom = "*", $where = null, $isShowCompiled = false)
+    {
+
+        $q = $this->db->select($kolom)
+            ->from('user_petugas')
+            ->join('master_petugas', 'user_petugas.id_petugas=master_petugas.id_petugas')
+            ->join('acara', 'user_petugas.id_acara=acara.id')
+            ->order_by('tanggal_pelaksanaan', 'ASC')
+            ->limit(1);
+
+        if (!empty($where)) {
+            $q->where($where);
+        }
+
+        if ($isShowCompiled) {
+            return $q->get_compiled_select();
+        } else {
+            return $q->get();
+        }
+    }
 }
 
 /* End of file Acara_m.php */
